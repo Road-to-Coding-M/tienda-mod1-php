@@ -1,0 +1,5 @@
+Cambios para soporte de subida de imágenes:
+- app/create.php: ahora acepta 'enctype="multipart/form-data"', añade input <input type="file" name="image"> y procesa la subida.
+- Al crear producto, si se sube una imagen válida (JPEG/PNG/WEBP), el archivo se guarda en public/uploads/ con nombre product_{uuid}.ext y se establece $_POST['imagen'] automáticamente.
+- Se crea la carpeta public/uploads/ (incluye .gitkeep).
+- No se tocan otros flujos: update-image.php y update_image_file.php siguen funcionando para cambios posteriores.
