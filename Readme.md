@@ -14,7 +14,7 @@ docker compose up -d --build
 # Adminer:   http://localhost:8081  (System: PostgreSQL, Server: postgres-db, User: admin, Pass: adminPassword123, DB: tienda)
 ```
 Usuarios:
-- admin / **Admin1**
+- admin / **admin**
 
 
 ## Estructura
