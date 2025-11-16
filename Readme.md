@@ -15,9 +15,7 @@ docker compose up -d --build
 ```
 Usuarios:
 - admin / **Admin1**
-- user  / **User1234**
 
-> Si cambias puertos/credenciales, actualiza `.env`.
 
 ## Estructura
 ```
