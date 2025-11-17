@@ -28,6 +28,8 @@ $userName = $session->getNombre();
             const IS_ADMIN = <?= $isAdmin ? 'true' : 'false' ?>;
             if (IS_ADMIN) return;
 
+            // Targets that require permission (links/buttons across the site).
+            // SELECTOR: all buttons/links that require admin permission.
             const SELECTOR = [
               'a[href^="/create"]',
               'a[href^="/update?"]',
