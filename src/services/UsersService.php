@@ -3,11 +3,13 @@ namespace services;
 
 use models\User;
 use PDO;
-use Throwable;
 
+// to make sure this file exists
 require_once __DIR__ . '/../models/User.php';
 
 class UsersService {
+    // Declares a private property $db with type PDO,
+    // which represents the database connection to PostgreSQL.
     private PDO $db;
     public function __construct(PDO $db){ $this->db = $db; }
 
@@ -18,11 +20,14 @@ class UsersService {
             throw new \RuntimeException('invalid_credentials');
         }
 
+        // $user->password is a bcrypt hash from the database.
+        // pgcrypto uses "$2a$", while PHP normally uses "$2y$".
         $hash = (string)($user->password ?? '');
         if (strncmp($hash, '$2a$', 4) === 0) {
-            $hash = '$2y$' . substr($hash, 4); // 兼容 $2a$ → $2y$
+            $hash = '$2y$' . substr($hash, 4); // $2a$ → $2y$
         }
-
+        
+        // to verify the password
         if (!password_verify($password, $hash)) {
             throw new \RuntimeException('invalid_credentials');
         }
@@ -30,16 +35,19 @@ class UsersService {
     }
 
     public function findUserByUsername(string $username): ?User {
+        // prepared statement to prevent SQL injection
+        // Check usuarios to see if the username exists.
         $stmt = $this->db->prepare("SELECT * FROM usuarios WHERE username = :u AND is_deleted = FALSE");
         $stmt->execute([':u' => $username]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) return null;
-
+        
+        // Get user roles using user_id.
         $rolesStmt = $this->db->prepare("SELECT roles FROM user_roles WHERE user_id = :id");
         $rolesStmt->execute([':id' => $row['id']]);
         $roles = array_map(fn($r) => $r['roles'], $rolesStmt->fetchAll(PDO::FETCH_ASSOC));
 
-        // 依你的 User 模型順序建立物件：id, username, password, nombre, apellidos, email, roles, createdAt, updatedAt, isDeleted
+       // Create the object following your User model.
         return new User(
             $row['id'] ?? null,
             $row['username'] ?? null,
