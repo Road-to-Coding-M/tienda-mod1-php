@@ -22,12 +22,12 @@ $userName = $session->getNombre();
           <span class="navbar-toggler-icon"></span>
           <?php $isAdmin = \services\SessionService::getInstance()->hasRole('ADMIN'); ?>
           <script>
-          // 非 admin 攔截敏感操作，直接 alert 並取消跳轉
+            
+          // Block non-admin users—show alert and stop the action.
           (function(){
             const IS_ADMIN = <?= $isAdmin ? 'true' : 'false' ?>;
             if (IS_ADMIN) return;
 
-            // 需要權限的連結/提交目標（盡量涵蓋首頁與頁內按鈕）
             const SELECTOR = [
               'a[href^="/create"]',
               'a[href^="/update?"]',
@@ -36,14 +36,16 @@ $userName = $session->getNombre();
               'form[action^="/update-image-file"] button[type="submit"]'
             ].join(',');
 
+            // This JS blocks unauthorized clicks and shows a "forbidden" message.
             document.addEventListener('click', function(e){
-              const el = e.target.closest(SELECTOR);
+              const el = e.target.closest(SELECTOR); // SELECTOR marks elements that require admin permission.
               if (!el) return;
               e.preventDefault();
               alert('Acceso denegado por falta de permisos.');
             });
 
-            // 保險：攔截 form 直接提交
+            // Prevent users from cheating by 
+            // sending direct POST/GET requests to backend APIs.
             document.addEventListener('submit', function(e){
               const f = e.target;
               const action = (f.getAttribute('action') || '');
@@ -81,6 +83,9 @@ $userName = $session->getNombre();
     <main class="container">
       <script>
     const sp = new URLSearchParams(location.search);
+
+    // If the error is "forbidden", it shows an alert message.
+    // This code does not check permissions — it only displays the message.
     if (sp.get('error') === 'forbidden') { alert('Acceso denegado por falta de permisos'); sp.delete('error'); history.replaceState(null,'', location.pathname + (sp.toString()?('?'+sp.toString()):'')); }
 </script>
 
