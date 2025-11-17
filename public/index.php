@@ -53,6 +53,7 @@ error_log("Calculated requestPath: " . $requestPath);
 // Set roles similar static
 $session = SessionService::getInstance();
 
+// redirects non-admin users to ?error=forbidden.
 $deny = function() {
     $basePath = rtrim((string)($GLOBALS['basePath'] ?? ''), '/');
     header('Location: ' . $basePath . '/?error=forbidden');
