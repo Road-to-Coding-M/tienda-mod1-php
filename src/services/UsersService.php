@@ -13,15 +13,14 @@ class UsersService {
     private PDO $db;
     public function __construct(PDO $db){ $this->db = $db; }
 
-    /** 驗證：支援 pgcrypto 產生的 $2a$（轉成 $2y$ 後再驗證） */
+    // $user->password is a bcrypt hash from the database.
+    // pgcrypto uses "$2a$", while PHP normally uses "$2y$".
     public function authenticate(string $username, string $password): User {
         $user = $this->findUserByUsername($username);
         if (!$user) {
             throw new \RuntimeException('invalid_credentials');
         }
 
-        // $user->password is a bcrypt hash from the database.
-        // pgcrypto uses "$2a$", while PHP normally uses "$2y$".
         $hash = (string)($user->password ?? '');
         if (strncmp($hash, '$2a$', 4) === 0) {
             $hash = '$2y$' . substr($hash, 4); // $2a$ → $2y$
