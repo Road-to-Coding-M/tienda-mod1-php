@@ -2,26 +2,33 @@
 namespace services;
 
 class SessionService {
+    // Only one SessionService instance exists
     private static $instance = null;
+    // Set session expiration to 3600 seconds (1 hour).
     private $expireAfterSeconds = 3600;
 
+    // After logging in, the session remembers it across all pages.
     private function __construct() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        // Expiración simple por inactividad
+        // Expiración >3600s (inactividad)
         $now = time();
         if (isset($_SESSION['last_activity']) && ($now - $_SESSION['last_activity']) > $this->expireAfterSeconds) {
             $this->logout();
         }
+        
+        // If the time since last activity exceeds the expiration limit,
+        // the user is automatically logged out.
         $_SESSION['last_activity'] = $now;
+        // If 'visits' is not set yet, initialize it to 0.
         if (!isset($_SESSION['visits'])) $_SESSION['visits'] = 0;
-        $_SESSION['visits']++;
+        $_SESSION['visits']++;   // Increase the page-visit counter for this session.
     }
 
     public static function getInstance(): SessionService {
         if (!self::$instance) self::$instance = new SessionService();
         return self::$instance;
     }
-
+    
     public function login($user) {
         $_SESSION['loggedIn'] = true;
         $_SESSION['user'] = [
@@ -33,7 +40,10 @@ class SessionService {
         $_SESSION['last_login'] = date('Y-m-d H:i:s');
     }
 
+    
+    // clear PHP session data + clear the browser's session cookie.
     public function logout() {
+        // Clear all data stored in the PHP session array.
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
@@ -42,6 +52,7 @@ class SessionService {
         session_destroy();
     }
 
+    // Check if $_SESSION['loggedIn'] has a value.
     public function isLogged(): bool { return !empty($_SESSION['loggedIn']); }
     public function getUsername(): string { return $this->isLogged() ? ($_SESSION['user']['username'] ?? 'Invitado') : 'Invitado'; }
     public function getNombre(): string { return $this->isLogged() ? ($_SESSION['user']['nombre'] ?? 'Invitado') : 'Invitado'; }
@@ -50,6 +61,8 @@ class SessionService {
         $roles = $_SESSION['user']['roles'] ?? [];
         return in_array($role, $roles);
     }
+
+    // getVisits(): return the visit counter stored in the session.
     public function getVisits(): int { return $_SESSION['visits'] ?? 0; }
     public function getLastLogin(): ?string { return $_SESSION['last_login'] ?? null; }
 
