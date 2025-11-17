@@ -11,7 +11,7 @@ Proyecto de ejemplo para la tarea evaluable: CRUD de productos con autenticació
 docker compose up -d --build
 # Acceso:
 # Web:       http://localhost:8080
-# Adminer:   http://localhost:8081  (System: PostgreSQL, Server: postgres-db, User: admin, Pass: adminPassword123, DB: tienda)
+# Adminer:   http://localhost:8081  (System: PostgreSQL, Server: postgres-db, User: admin, Pass: admin, DB: tienda)
 ```
 Usuarios:
 - admin / **admin**
