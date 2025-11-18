@@ -18,23 +18,24 @@ $session      = SessionService::getInstance();
 
 $error = null;
 
-// 處理登入必須在任何輸出(含 header.php)之前
+// Handle login before any output (including header.php)
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
     $u = trim($_POST['username'] ?? '');
     $p = (string)($_POST['password'] ?? '');
 
     try {
-        $user = $usersService->authenticate($u, $p); // 內部已處理 $2a$ → $2y$ 兼容的版本
+        // authenticate() internally handles $2a$ → $2y$ compatibility for bcrypt hashes
+        $user = $usersService->authenticate($u, $p);
         $session->login($user);
         header('Location: /');
-        exit; // 重要：避免後續再輸出
+        exit; // stop execution to avoid sending further output
     } catch (Throwable $e) {
-        // 統一訊息，避免把 hash 等技術細節顯示
+        // do not leak hash or technical details
         $error = 'Usuario o contraseña inválidos';
     }
 }
 
-// 只在處理完畢後才輸出頁面
+// Only render the page after handling the login logic
 require_once __DIR__ . '/header.php';
 ?>
 <div class="row justify-content-center">
