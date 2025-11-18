@@ -39,16 +39,16 @@ if (!$producto) {
 
       <div class="my-3">
         <?php
-        // 動態決定圖片來源
+        // Dynamically determine the image source
         $rawImg    = $producto->imagen ?? '';
         $uploadUrl = rtrim($config->uploadUrl ?? '/uploads', '/');
 
         if ($rawImg === '' || $rawImg === null) {
-            // 無圖 → 用品牌字樣產生 placeholder
+            // No image available → generate a placeholder using the brand name
             $placeholderText = trim((string)($producto->marca ?? '')) ?: 'Producto';
             $imgSrc = 'https://via.placeholder.com/300x200?text=' . urlencode($placeholderText);
         } else {
-            // 有圖 → 完整 URL 或以 / 開頭就直接用，否則視為檔名接在 uploads 後面
+            // image →  URL or / ，otherwise use uploads 
             if (preg_match('~^https?://~', $rawImg) || str_starts_with($rawImg, '/')) {
                 $imgSrc = $rawImg;
             } else {
@@ -56,7 +56,7 @@ if (!$producto) {
             }
         }
 
-        // 破快取（上傳後能立刻看到新圖）
+        // Cache-busting to ensure the updated image is shown immediately
         $stamp  = $producto->updated_at ?? time();
         $imgSrc = $imgSrc . (str_contains($imgSrc, '?') ? '&' : '?') . 'v=' . urlencode((string)$stamp);
         ?>
