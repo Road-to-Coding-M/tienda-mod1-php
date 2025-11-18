@@ -62,7 +62,6 @@ require_once __DIR__ . '/header.php';
 
     <div class="col-md-8">
       <h5>Subir nueva imagen (JPEG/PNG)</h5>
-      <!-- 若你的路由是 /update-image-file 就改成那個；目前照你專案維持這條 -->
       <form action="/update_image_file.php" method="post" enctype="multipart/form-data" class="p-3 border rounded">
         <input type="hidden" name="id" value="<?= (int)$producto->id ?>">
         <div class="mb-3">
